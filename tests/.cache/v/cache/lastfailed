@@ -1,0 +1,16 @@
+{
+  "test_amity.py::TestFellow::test_if_fellow_exists": true, 
+  "test_amity.py::TestLiving_Space::test_if_add_living_space_works": true, 
+  "test_amity.py::TestLiving_Space::test_if_living_space_exists": true, 
+  "test_amity.py::TestPerson::test_if_add_person_method_works": true, 
+  "test_amity.py::TestPerson::test_if_person_exists": true, 
+  "test_amity.py::TestPerson::test_wrong_input": true, 
+  "test_amity.py::TestRoom::test_create_room_method": true, 
+  "test_amity.py::TestRoom::test_if_room_exists": true, 
+  "test_amity.py::TestRoom::test_living_space_max_capacity": true, 
+  "test_amity.py::TestRoom::test_office_maximum_capacity": true, 
+  "test_amity.py::TestRoom::test_wrong_input": true, 
+  "test_amity.py::TestStaff::test_if_staff_exists": true, 
+  "test_amity.py::Test_Office::test_if_add_office_works": true, 
+  "test_amity.py::Test_Office::test_if_office_exists": true
+}
