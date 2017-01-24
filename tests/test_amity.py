@@ -21,6 +21,12 @@ class Test_Amity(unittest.TestCase):
         no_of_ls_after = len(self.amity.available_offices)
         self.assertNotEqual(no_of_ls_after, no_of_ls_before, msg="There is an available living space")
 
+    def tearDown(self):
+        del self.amity
+        del self.office
+        del self.living_space
+        del self.test_staff
+
 
 class TestRoom(unittest.TestCase):
     """ Tests for the amity_class.Room class """
@@ -55,6 +61,12 @@ class TestRoom(unittest.TestCase):
         no_of_people = len(self.amity.rooms[self.room.room_name.lower()])
         self.assertNotEqual(no_of_people, 4, msg="The max number of people an office can hold is 6")
 
+    def tearDown(self):
+        del self.amity
+        del self.room
+        del self.room_2
+
+
 
 class Test_Office(unittest.TestCase):
     """ Tests for the amity_class.Office """
@@ -76,6 +88,10 @@ class Test_Office(unittest.TestCase):
         self.office.add_office()
         self.assertNotIn(self.office.room_name , self.amity.offices , msg = "The office does not already exist")
 
+    def tearDown(self):
+        del self.amity
+        del self.office
+
 
 class TestLiving_Space(unittest.TestCase):
     """ Tests for the amity_class.Living_Space"""
@@ -96,6 +112,10 @@ class TestLiving_Space(unittest.TestCase):
 
         self.living_s.add_living_space()
         self.assertNotIn(self.living_s.room_name, self.amity.living_spaces, msg="The living space does not exist yet")
+
+    def tearDown(self):
+        del self.amity
+        del self.living_s
 
 
 class TestPerson(unittest.TestCase):
@@ -137,6 +157,13 @@ class TestPerson(unittest.TestCase):
         len_of_people_after = len(self.amity.people)
         self.assertNotEqual(len_of_people_after, len_of_people_before, msg="A person was added")
 
+    def tearDown(self):
+        del self.test_person
+        del self.amity
+        del self.new_person
+        del self.new_room2
+        del self.new_room3
+
 class TestFellow(unittest.TestCase):
     """ Tests for the amity_class.Fellow class """
     def setUp(self):
@@ -161,6 +188,11 @@ class TestFellow(unittest.TestCase):
         no_of_fellows_after = len(Amity.fellows)
         self.assertEqual(no_of_fellows_after, no_of_fellows_before + 1, msg="The fellow has been added")
 
+    def tearDown(self):
+        del self.room
+        del self.office
+        del self.new_fellow
+
 
 class TestStaff(unittest.TestCase):
     """ Tests for amity_class.Staff class """
@@ -175,4 +207,9 @@ class TestStaff(unittest.TestCase):
         self.new_office2.create_room()
         self.new_staff.add_person()
         self.assertNotIn(self.new_staff.employee_id, self.amity.people.keys(),
-                         msg="The staff member doesnot already exists")
+                         msg="The staff member does not already exists")
+
+    def tearDown(self):
+        del self.new_office2
+        del self.amity
+        del self.new_staff
