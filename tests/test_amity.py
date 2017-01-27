@@ -1,4 +1,5 @@
-from io import StringIO
+from StringIO import StringIO
+from mock import patch
 
 import unittest
 from functions.amity_class import Amity, Room, Office, Living_Space, Person, Fellow, Staff
@@ -20,6 +21,12 @@ class Test_Amity(unittest.TestCase):
         self.amity.check_available_rooms()
         no_of_ls_after = len(self.amity.available_offices)
         self.assertNotEqual(no_of_ls_after, no_of_ls_before, msg="There is an available living space")
+
+    @patch('sys.stdout' , new_string =StringIO)
+    def test_print_allocations(mock_stdout):
+        self.amity.print_allocations()
+        assert mock_stdout.getvalue() == "Room Name:" "Taveta"
+
 
     def tearDown(self):
         del self.amity
