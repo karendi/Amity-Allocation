@@ -69,6 +69,9 @@ def docopt_cmd(func):
 def definition():
     print("This program is supposed to help allocate space to Amity's empolyees")
     print("the space can either be an office or Living_Space")
+    print("------------------------------------------------------")
+    print("\n")
+    print(__doc__)
 
 
 class Amity(cmd.Cmd):
