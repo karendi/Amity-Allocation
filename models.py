@@ -22,12 +22,10 @@ class Amity_Allocation(Base):
 
     __tablename__ = 'Amity_Allocation'
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-    Room_name = Column(String(25))
+    Room_name = Column(String(25), primary_key=True)
     Allocated_People = Column(Text)
 
-    def __init__(self, Room_name=None, Allocated_People=None, id=None):
-        self.id = id
+    def __init__(self, Room_name=None, Allocated_People=None):
         self.Room_name = Room_name
         self.Allocated_People = Allocated_People
 
@@ -44,8 +42,23 @@ class Amity_Living_space(Base):
     Room_name = Column(String(25), primary_key=True)
 
 
-# create an engine that stores data in the local directory
-engine = create_engine('sqlite:///amity_allocation.db')
+class Amity_Fellows(Base):
+    __tablename__ = 'Amity_Fellows'
 
-# create all tables is the engine.It is the same as Create Table in sql
-Base.metadata.create_all(engine)
+    Employee_id = Column(Integer, primary_key=True)
+    Fellow_name = Column(String(25))
+
+
+class Amity_Staff(Base):
+    __tablename__ = 'Amity_Staff'
+
+    Employee_id = Column(Integer, primary_key=True)
+    Staff_name = Column(String(25))
+
+
+def create_db(database_name):
+    directory = 'databases/'
+    # create an engine that stores data in the local directory
+    engine = create_engine('sqlite:///' + directory + database_name +'.db')
+    # create all tables in the engine.It is the same as Create Table in sql
+    return Base.metadata.create_all(engine)
