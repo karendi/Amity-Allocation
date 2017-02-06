@@ -33,10 +33,13 @@ class Amity(object):
         """ Method that prints the rooms and people allocated to them """
         if len(Amity.rooms) != 0:
             for key, value in Amity.rooms.iteritems():
-                print ("Room Name:" + key)
+                print ("Room Name: " + key)
                 print("---------------------------------------------")
                 for person in value:
-                    print(person)
+                    if person in Amity.fellows.keys():
+                        print Amity.fellows[person]
+                    elif person in Amity.staff.keys():
+                        print Amity.staff[person]
                 print("---------------------------------------------")
                 print("\n")
         else:
@@ -170,10 +173,10 @@ class Person(Amity):
                 Person.Last_name = new_person[1]
                 Person.employee_type = new_person[2].lower()
                 Person.employee_id = new_person[3].strip('\n')
-                # add the person to the people list
-                Amity.people[Person.employee_id] = Person.employee_type
                 new_staff2 = Staff(Person.First_name, Person.Last_name, Person.employee_type, Person.employee_id)
                 print (new_staff2.add_person())
+                # add the person to the people list
+                Amity.people[Person.employee_id] = Person.employee_type
 
             elif new_person[2].lower() == 'fellow':
 
@@ -182,11 +185,11 @@ class Person(Amity):
                 Person.employee_type = new_person[2].lower()
                 Person.employee_id = new_person[3]
                 Person.want_accomodation = new_person[4].strip('\n')
-                # add the person to the people list
-                Amity.people[Person.employee_id] = Person.employee_type
                 new_fellow2 = Fellow(Person.First_name,Person.Last_name, Person.employee_type, Person.employee_id,
                                      Person.want_accomodation)
                 print(new_fellow2.add_person())
+                # add the person to the people list
+                Amity.people[Person.employee_id] = Person.employee_type
 
             else:
                 return "The person you are trying to add is not categorized correctly"
