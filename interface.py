@@ -155,6 +155,7 @@ class Amity(cmd.Cmd):
     def do_load_state(self, arg):
         """Usage: load_state <database>"""
         database_name = arg['<database>']
+        # check if the database exists
         if os.path.exists("./databases/" + database_name + ".db"):
             database_object2 = sessions.Database_sessions(database_name)
             database_object2.return_rooms()
