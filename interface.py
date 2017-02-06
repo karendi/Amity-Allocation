@@ -109,21 +109,26 @@ class Amity(cmd.Cmd):
         e_id = int(arg['<Employee_No>'])
         a_status = arg['<want_accommodation>']
 
-        if e_type.lower() == "fellow":
-            # append the employee id to a list with fellows
-            added_fellow = amity_class.Fellow(f_name, l_name, e_type, e_id, a_status)
-            print(added_fellow.add_person())
+        if len(amity_class.Amity.rooms) != 0:
+            if e_type.lower() == "fellow":
+                # append the employee id to a list with fellows
+                added_fellow = amity_class.Fellow(f_name, l_name, e_type, e_id, a_status)
+                print(added_fellow.add_person())
 
-        elif e_type.lower() == "staff":
-            # append the employee id to a list with staff members
-            a_status = "n"  # default for a staff member
+            elif e_type.lower() == "staff":
+                # append the employee id to a list with staff members
+                a_status = "n"  # default for a staff member
 
-            added_staff = amity_class.Staff(f_name, l_name, e_type, e_id)
-            print(added_staff.add_person())
+                added_staff = amity_class.Staff(f_name, l_name, e_type, e_id)
+                print(added_staff.add_person())
 
-        # add the person to the amity population dictionary
-        new_person = amity_class.Person(f_name, l_name, e_type, e_id)
-        print(new_person.add_person())
+            # add the person to the amity population dictionary
+            new_person = amity_class.Person(f_name, l_name, e_type, e_id)
+            print(new_person.add_person())
+        else:
+            print("You must create rooms first!")
+
+
 
     @docopt_cmd
     def do_save_state(self, arg):
