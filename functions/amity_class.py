@@ -19,7 +19,7 @@ class Amity(object):
     @staticmethod
     def check_available_rooms():
         """ Method that checks and returns rooms both living spaces and offices that aren't full"""
-        for key, value in Amity.rooms.iteritems():
+        for key, value in Amity.rooms.items():
             if key in Amity.offices:
                 if len(value) < 6:
                     Amity.available_offices.append(key)
@@ -32,7 +32,7 @@ class Amity(object):
     def print_allocations():
         """ Method that prints the rooms and people allocated to them """
         if len(Amity.rooms) != 0:
-            for key, value in Amity.rooms.iteritems():
+            for key, value in Amity.rooms.items():
                 print ("Room Name: " + key)
                 print("---------------------------------------------")
                 for person in value:
@@ -51,7 +51,7 @@ class Amity(object):
         if len(Amity.unallocated_people) == 0: # check if there are any people in the unallocated_people dict
             print("There are currently no unallocated people..")
         else:
-            for key, value in Amity.unallocated_people.iteritems():
+            for key, value in Amity.unallocated_people:
                 print("Unallocated List of people")
                 print("-----------------------------------------------")
                 print(key + ":" + " " + value)
@@ -305,7 +305,7 @@ class Fellow(Person):
                 # return a new dict with just the offices
                 new_dict = {key: value for key, value in Amity.rooms.items() if key in Amity.offices}
                 # Look for the person in the offices
-                for room, list_of_people in new_dict.iteritems():
+                for room, list_of_people in new_dict.items():
                     if p_identifier in list_of_people:  # find the person in the office
                         Amity.rooms[room].remove(p_identifier)  # remove the person from the room
                         Amity.rooms[r_name].append(p_identifier)  # add them to the new room given
@@ -317,7 +317,7 @@ class Fellow(Person):
                 # return a new dict with just the living_spaces
                 new_dict2 = {key: value for key, value in Amity.rooms.items() if key in Amity.living_spaces}
                 # Check for the person in the living_spaces
-                for room2, list_of_people2 in new_dict2.iteritems():
+                for room2, list_of_people2 in new_dict2.items():
                     if p_identifier in list_of_people2:  # find the person in the living_spaces
                         Amity.rooms[room2].remove(p_identifier)  # remove the person from the living_space
                         Amity.rooms[r_name].append(p_identifier)  # add them to the new living_space
@@ -382,7 +382,7 @@ class Staff(Person):
             elif r_name in Amity.offices:
                 print("reallocating the staff to a new office...")
                 # Look for the person in the offices
-                for room, list_of_people in Amity.rooms.iteritems():
+                for room, list_of_people in Amity.rooms.items():
                     if p_identifier in list_of_people:  # find the person in the rooms
                         list_of_people.remove(p_identifier)  # remove the person from the room
                         Amity.rooms[r_name].append(p_identifier)  # add them to a new room
