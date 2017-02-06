@@ -60,7 +60,7 @@ class Database_sessions(object):
                 self.session.commit()
             else:  # if more than two people were allocated to the room
                 returned_data.Room_name = room_name
-                returned_data.Allocated_People = ','.join(people4)
+                returned_data.Allocated_People = ','.join(map(str, people4))
                 self.session.commit()
         return "The room data was added"
 
@@ -88,7 +88,7 @@ class Database_sessions(object):
 
                 elif length_of_list > 1:
                     # list is v (make the list a string)
-                    people = ','.join(people_in)
+                    people = ','.join(map(str, people_in))
                     allocation = Amity_Allocation(Room_name=roomname, Allocated_People=people)
                     self.session.add(allocation)
                     self.session.commit()
@@ -192,7 +192,7 @@ class Database_sessions(object):
             fellow_id = int(fellow.Employee_id)
             fellow_name = fellow.Fellow_name
             Amity.fellows[fellow_id] = fellow_name  # add data to the Amity.fellows dict
-        print Amity.fellows
+        print (Amity.fellows)
 
     def return_staff(self):
         print("Returning the staff members..")
@@ -201,7 +201,7 @@ class Database_sessions(object):
             staff_id = int(staff.Employee_id)
             staff_name = staff.Staff_name
             Amity.staff[staff_id] = staff_name  # add data to the Amity.staff dict
-        print Amity.staff
+        print (Amity.staff)
 
     def return_population(self):
         print("Returning the Amity population..")
