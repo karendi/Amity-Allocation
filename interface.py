@@ -179,11 +179,11 @@ class Amity(cmd.Cmd):
         person_identifier = int(arg['<employee_id>'])
         room_name = arg['<room_name>']
         # test the employee type of the person
-        if person_identifier in amity_class.Amity.staff:
+        if person_identifier in amity_class.Amity.staff.keys():
             to_be_reallocated = amity_class.Staff()
             print(to_be_reallocated.reallocate_staff(person_identifier, room_name))
 
-        elif person_identifier in amity_class.Amity.fellows:
+        elif person_identifier in amity_class.Amity.fellows.keys():
             fellow_to_be_allocated=amity_class.Fellow()
             print(fellow_to_be_allocated.reallocate_fellow(person_identifier, room_name))
 
