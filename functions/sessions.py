@@ -47,7 +47,7 @@ class Database_sessions(object):
 
     def edit_room(self, **data):
         """ Edits an already existing column (existing room in the database)"""
-        for room_name, people4 in Amity.rooms.iteritems():
+        for room_name, people4 in Amity.rooms.items():
             number_of_people = len(people4)
             returned_data = self.session.query(Amity_Allocation).filter_by(Room_name=room_name).first()
             if number_of_people == 0:  # when no-one was allocated to that room again
@@ -69,7 +69,7 @@ class Database_sessions(object):
         enters the data to the model Amity_Allocation
         """
 
-        for roomname, people_in in Amity.rooms.iteritems():
+        for roomname, people_in in Amity.rooms.items():
             # add data to the table
             length_of_list = len(people_in)
 
@@ -126,7 +126,7 @@ class Database_sessions(object):
     def add_fellows(self, **data):
         """ Function that adds all the fellows from the fellows dict to the database,
          uses the model Amity_Fellows"""
-        for fellow_id, fellow_name in Amity.fellows.iteritems():
+        for fellow_id, fellow_name in Amity.fellows.items():
             # check if the fellow exists
             check_fellow = self.session.query(Amity_Fellows).filter(Amity_Fellows.Employee_id == fellow_id).first()
             if check_fellow is None:
@@ -140,7 +140,7 @@ class Database_sessions(object):
     def add_staff(self, **data):
         """ Method that adds all the staff members from the staff dict to the database,
         uses the model Amity_Staff """
-        for staff_id, staff_name in Amity.staff.iteritems():
+        for staff_id, staff_name in Amity.staff.items():
             # check if the staff exists
             check_staff = self.session.query(Amity_Staff).filter(Amity_Staff.Employee_id == staff_id).first()
             if check_staff is None:
