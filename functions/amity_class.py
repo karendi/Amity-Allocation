@@ -64,8 +64,10 @@ class Amity(object):
             print("-------------------------------------")
 
             for person in Amity.rooms[room_name]:
-
-                print(person)
+                if person in Amity.fellows.keys():
+                    print(Amity.fellows[person])
+                elif person in Amity.staff.keys():
+                    print(Amity.staff[person])
         else:
             print("The room does not exist")
 
