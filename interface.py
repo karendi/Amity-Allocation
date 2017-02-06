@@ -1,6 +1,6 @@
 """
 Usage:
-    interface.py create_room <room_name> <room_type>
+    interface.py create_room <room_name>...
     interface.py add_person <First_name> <Last_name> <E_Type> <want_accomodation>
     interface.py save_state [--db=sqlite_database]
     interface.py quit
@@ -30,6 +30,7 @@ Options:
 
 from docopt import docopt, DocoptExit
 import cmd
+import os.path
 from functions import amity_class
 from functions import sessions
 from models import create_db
@@ -79,23 +80,25 @@ class Amity(cmd.Cmd):
 
     @docopt_cmd
     def do_create_room(self, arg):
-        """Usage: create_room <room_name> <room_type> """
+        """Usage: create_room <room_name>..."""
 
         room_name = arg['<room_name>']
-        room_type = arg['<room_type>']
 
-        if room_type.lower() == "office":
-            added_office = amity_class.Office(room_name.lower(), room_type)
-            print(added_office.add_office())
+        if room_name[-1].lower() == "office":
+            for off in room_name[:-1]:
+                added_office = amity_class.Office(off.lower(), "office")
+                print(added_office.add_office())
+                added_room = amity_class.Room(off.lower(), "office")
+                print(added_room.create_room())
 
-        elif room_type.lower() == "living_space":
-            added_living_space = amity_class.Living_Space(room_name.lower(), room_type)
-            print(added_living_space.add_living_space())
+        elif room_name[-1].lower() == "living_space":
+            for l_space in room_name[:-1]:
+                added_living_space = amity_class.Living_Space(l_space.lower(), "living_space")
+                print(added_living_space.add_living_space())
+                added_room = amity_class.Room(l_space.lower(), "living_space")
+                print(added_room.create_room())
         else:
             print("That room category does not exist!")
-
-        added_room = amity_class.Room(room_name.lower(), room_type)
-        print(added_room.create_room())
 
     @docopt_cmd
     def do_add_person(self, arg):
@@ -152,13 +155,17 @@ class Amity(cmd.Cmd):
     def do_load_state(self, arg):
         """Usage: load_state <database>"""
         database_name = arg['<database>']
-        database_object2 = sessions.Database_sessions(database_name)
-        database_object2.return_rooms()
-        database_object2.return_offices()
-        database_object2.return_living_spaces()
-        database_object2.return_fellows()
-        database_object2.return_staff()
-        database_object2.return_population()
+        if os.path.exists("./databases/" + database_name + ".db"):
+            database_object2 = sessions.Database_sessions(database_name)
+            database_object2.return_rooms()
+            database_object2.return_offices()
+            database_object2.return_living_spaces()
+            database_object2.return_fellows()
+            database_object2.return_staff()
+            database_object2.return_population()
+        else:
+            print("The database doesn't exist!")
+
 
     @docopt_cmd
     def do_check_data(self, arg):
