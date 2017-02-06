@@ -37,9 +37,9 @@ class Amity(object):
                 print("---------------------------------------------")
                 for person in value:
                     if person in Amity.fellows.keys():
-                        print (Amity.fellows[person])
+                        print (Amity.fellows[person] + " " +str(person))
                     elif person in Amity.staff.keys():
-                        print (Amity.staff[person])
+                        print (Amity.staff[person] + " " + str(person))
                 print("---------------------------------------------")
                 print("\n")
         else:
