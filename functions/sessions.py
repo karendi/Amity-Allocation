@@ -1,4 +1,5 @@
 import sqlite3
+import os.path
 
 from sqlalchemy import create_engine, update
 from sqlalchemy.orm import sessionmaker
@@ -6,6 +7,7 @@ from sqlalchemy.sql import exists
 from sqlalchemy.ext.declarative import declarative_base
 from models import Amity_Allocation, Amity_Population, Amity_Living_space, Amity_Offices, Amity_Fellows, Amity_Staff
 from functions.amity_class import Amity
+
 
 
 # for running native sql statements
@@ -16,10 +18,10 @@ cursor = connection.cursor()
 class Database_sessions(object):
 
     def __init__(self, database_name):
-        directory = 'databases/'
-        engine = create_engine('sqlite:///' + directory + database_name + '.db')
-        Session = sessionmaker(bind=engine)
-        self.session = Session()
+            directory = 'databases/'
+            engine = create_engine('sqlite:///' + directory + database_name + '.db')
+            Session = sessionmaker(bind=engine)
+            self.session = Session()
 
     def add_person(self, **data):
         """
@@ -162,7 +164,8 @@ class Database_sessions(object):
                 Amity.rooms[room_name] = new_list
             else:
                 people_in_room = i.Allocated_People.split(',')  # returns a list of all the people in the room
-                Amity.rooms[room_name] = people_in_room  # return the data
+                people_in_room_int = map(int , people_in_room) # change to integer
+                Amity.rooms[room_name] = people_in_room_int # return the data
 
         return Amity.rooms
 
@@ -189,8 +192,7 @@ class Database_sessions(object):
             fellow_id = int(fellow.Employee_id)
             fellow_name = fellow.Fellow_name
             Amity.fellows[fellow_id] = fellow_name  # add data to the Amity.fellows dict
-
-        return Amity.fellows
+        print Amity.fellows
 
     def return_staff(self):
         print("Returning the staff members..")
@@ -199,8 +201,7 @@ class Database_sessions(object):
             staff_id = int(staff.Employee_id)
             staff_name = staff.Staff_name
             Amity.staff[staff_id] = staff_name  # add data to the Amity.staff dict
-
-        return Amity.staff
+        print Amity.staff
 
     def return_population(self):
         print("Returning the Amity population..")
