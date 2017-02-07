@@ -314,7 +314,8 @@ class Fellow(Person):
                     if p_identifier in list_of_people:  # find the person in the office
                         Amity.rooms[room].remove(p_identifier)  # remove the person from the room
                         Amity.rooms[r_name].append(p_identifier)  # add them to the new room given
-                return Amity.rooms
+                        return Amity.rooms
+
 
             # check if the fellow is to be reallocated to a living_space
             elif r_name in Amity.living_spaces:
