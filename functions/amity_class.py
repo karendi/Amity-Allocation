@@ -51,10 +51,10 @@ class Amity(object):
         if len(Amity.unallocated_people) == 0: # check if there are any people in the unallocated_people dict
             print("There are currently no unallocated people..")
         else:
-            for key, value in Amity.unallocated_people:
+            for key, value in Amity.unallocated_people.items():
                 print("Unallocated List of people")
                 print("-----------------------------------------------")
-                print(key + ":" + " " + value)
+                print(str(key) + ":" + " " + value)
 
     @staticmethod
     def print_room(room_name):
@@ -158,7 +158,8 @@ class Person(Amity):
         elif self.employee_type in ["staff" , "fellow"]:
             e_type = self.employee_type.lower()
             Amity.people[self.employee_id] = e_type
-            return Amity.people  # return the dict {"emp_id":emp_type , "emp_id":emp_type}
+            return(" \n The employee with the id '{0}' has been added ".format(self.employee_id))
+
         else:
             return "Invalid employee type"
 
@@ -295,7 +296,9 @@ class Fellow(Person):
             elif Amity.unallocated_people[p_identifier] == "living_space" and r_name in Amity.available_living_spaces:
                 Amity.rooms[r_name].append(p_identifier)  # allocate the fellow to an available living space
                 return Amity.rooms
-
+            elif p_identifier in Amity.fellows.keys() and r_name in Amity.available_offices and Amity.available_living_spaces:
+                Amity.rooms[r_name].append(p_identifier)  # allocate the fellow to an available living space
+                return Amity.rooms
             else:
                 return "Sorry the fellow could not be reallocated"
 
@@ -361,7 +364,7 @@ class Staff(Person):
                 # append the staff to the staff dict
                 Amity.staff[self.employee_id] = staff_name
 
-                return Amity.rooms, Amity.unallocated_people, Amity.staff  # return the room dict , the staff list
+                print("\nThe staff member '{0}' was added to the office '{1}'".format(staff_name ,r_name))
 
     def reallocate_staff(self, p_identifier, r_name):
         Amity.check_available_rooms()
@@ -372,7 +375,7 @@ class Staff(Person):
             elif r_name in Amity.available_offices:
                 # check if the office is available
                 Amity.rooms[r_name].append(p_identifier)
-                return "The staff member with the id " + p_identifier + " has been reallocated "
+                return "The staff member with the id " + str(p_identifier) + " has been reallocated "
             else:
                 return "The staff could not be reallocated check that the room is available"
 

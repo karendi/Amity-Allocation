@@ -119,14 +119,14 @@ class Amity(cmd.Cmd):
                 # append the employee id to a list with staff members
                 a_status = "n"  # default for a staff member
 
-                added_staff = amity_class.Staff(f_name, l_name, e_type, e_id)
-                print(added_staff.add_person())
+                added_staff = amity_class.Staff(f_name, l_name, e_type, e_id, a_status)
+                return(added_staff.add_person())
 
             # add the person to the amity population dictionary
             new_person = amity_class.Person(f_name, l_name, e_type, e_id)
             print(new_person.add_person())
         else:
-            print("You must create rooms first!")
+            print(" \n You must create rooms first! \n")
 
 
 
@@ -193,14 +193,17 @@ class Amity(cmd.Cmd):
             print(fellow_to_be_allocated.reallocate_fellow(person_identifier, room_name))
 
         elif person_identifier not in amity_class.Amity.people.keys():
-            print("Sorry you cannot reallocate an employee who has not been saved ")
+            print("\n Sorry you cannot reallocate an employee who has not been saved \n")
 
 
     @docopt_cmd
     def do_load_from_text_file(self, arg):
         """ Usage: load_from_text_file """
-        person_from_text_file = amity_class.Person()
-        print(person_from_text_file.load_from_text_file())
+        if len(amity_class.Amity.rooms) != 0:
+            person_from_text_file = amity_class.Person()
+            print(person_from_text_file.load_from_text_file())
+        else:
+            print("\n You have to have/create rooms first! \n")
 
     @docopt_cmd
     def do_print_allocations(self, arg):
