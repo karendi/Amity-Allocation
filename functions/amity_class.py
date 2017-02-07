@@ -356,7 +356,7 @@ class Staff(Person):
 
                 elif len(Amity.rooms[r_name.lower()]) == 6:
                     #  when the room is full , allocated the extra people to Amity.unallocated_people dict
-                    print("The office is full, placing the staff member in the unallocated list...")
+                    return("The office is full, placing the staff member in the unallocated list...")
                     unallocated_list4 = [self.employee_id]
                     for x in unallocated_list4:
                         Amity.unallocated_people[x] = "office"  # append to the Amity.unallocated_people dict
@@ -364,7 +364,7 @@ class Staff(Person):
                 # append the staff to the staff dict
                 Amity.staff[self.employee_id] = staff_name
 
-                print("\nThe staff member '{0}' was added to the office '{1}'".format(staff_name ,r_name))
+                return("\nThe staff member '{0}' was added to the office '{1}'".format(staff_name ,r_name))
 
     def reallocate_staff(self, p_identifier, r_name):
         Amity.check_available_rooms()

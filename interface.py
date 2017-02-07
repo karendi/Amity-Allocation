@@ -120,7 +120,7 @@ class Amity(cmd.Cmd):
                 a_status = "n"  # default for a staff member
 
                 added_staff = amity_class.Staff(f_name, l_name, e_type, e_id, a_status)
-                return(added_staff.add_person())
+                print(added_staff.add_person())
 
             # add the person to the amity population dictionary
             new_person = amity_class.Person(f_name, l_name, e_type, e_id)
@@ -184,15 +184,15 @@ class Amity(cmd.Cmd):
         person_identifier = int(arg['<employee_id>'])
         room_name = arg['<room_name>']
         # test the employee type of the person
-        if person_identifier in amity_class.Amity.staff.keys():
+        if person_identifier in map(int,amity_class.Amity.staff.keys()):
             to_be_reallocated = amity_class.Staff()
             print(to_be_reallocated.reallocate_staff(person_identifier, room_name))
 
-        elif person_identifier in amity_class.Amity.fellows.keys():
+        elif person_identifier in map(int,amity_class.Amity.fellows.keys()):
             fellow_to_be_allocated=amity_class.Fellow()
             print(fellow_to_be_allocated.reallocate_fellow(person_identifier, room_name))
 
-        elif person_identifier not in amity_class.Amity.people.keys():
+        elif person_identifier not in map(int,amity_class.Amity.people.keys()):
             print("\n Sorry you cannot reallocate an employee who has not been saved \n")
 
 
