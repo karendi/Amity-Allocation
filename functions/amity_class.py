@@ -166,7 +166,7 @@ class Person(Amity):
     @staticmethod
     def load_from_text_file():
         """ Adds a person from a specified text file """
-        src_dir = "/Users/sharonwanjikunjihia/Documents/python_projects/Amity_allocation/"
+        src_dir = "files/"
         new_file_2 = os.path.join(src_dir, "load.txt")
         new_file = open(new_file_2)
         for add_person in new_file.readlines():
@@ -356,10 +356,10 @@ class Staff(Person):
 
                 elif len(Amity.rooms[r_name.lower()]) == 6:
                     #  when the room is full , allocated the extra people to Amity.unallocated_people dict
-                    return("The office is full, placing the staff member in the unallocated list...")
                     unallocated_list4 = [self.employee_id]
                     for x in unallocated_list4:
                         Amity.unallocated_people[x] = "office"  # append to the Amity.unallocated_people dict
+                    return("The office is full, placing the staff member in the unallocated list...")
 
                 # append the staff to the staff dict
                 Amity.staff[self.employee_id] = staff_name
