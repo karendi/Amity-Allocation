@@ -1,113 +1,226 @@
 import unittest
-from functions.amity_class import Amity, Room , Office , Living_Space , Person , Fellow , Staff
+from functions.amity_class import Amity, Room, Office, LivingSpace, Person, Fellow, Staff
+
+
+class Test_Amity(unittest.TestCase):
+    """ Tests for the amity_class.Amity class methods"""
+    def setUp(self):
+        self.amity = Amity()
+        self.office = Room("Taveta", "office")
+        self.office_2 = Office("Taveta", "office")
+        self.living_space = Room("Ian", "living_space")
+        self.living_space_2 = LivingSpace("Ian", "living_space")
+        self.test_staff = Person("Charles","Muthini", "staff", 67, "y")
+
+    def test_check_available_rooms(self):
+        """ Tests if the offices are not filled to capacity """
+        self.amity.check_available_rooms()
+        no_of_livingspaces_before = len(self.amity.available_living_spaces)
+        self.living_space.create_room()
+        self.living_space_2.add_living_space()
+        self.amity.check_available_rooms()
+        no_of_living_spaces_after = len(self.amity.available_living_spaces)
+        self.assertNotEqual(no_of_living_spaces_after, no_of_livingspaces_before, msg="There is an available living space")
+
+    def test_unavailable_rooms(self):
+        self.amity.check_available_rooms()
+        no_of_offices_before = len(self.amity.available_offices)
+        self.office.create_room()
+        self.office_2.add_office()
+        self.amity.check_available_rooms()
+        no_of_offices_after = len(self.amity.available_offices)
+        self.assertNotEqual(no_of_offices_after , no_of_offices_before, msg="There is an available office")
+
+    def test_print_allocations_when_there_are_no_unallocated_people(self):
+        results = self.amity.print_allocations()
+        self.assertNotEqual(results, "There are no allocations yet to be printed")
+
+    def test_print_room(self):
+        """ Test that a room is printed """
+        results = self.amity.print_room("krypton")
+        self.assertIn("krypton", self.amity.rooms.keys())
+
+    def tearDown(self):
+        del self.amity
+        del self.office
+        del self.office_2
+        del self.living_space
+        del self.living_space_2
+        del self.test_staff
+
 
 class TestRoom(unittest.TestCase):
     """ Tests for the amity_class.Room class """
+
+    def setUp(self):
+        self.amity = Amity()
+        self.room = Room("Krypton", "office")
+        self.room_2 = Room("Sharon", "living_space")
+        self.invalid_room = Room("Lilac", "library")
+
     def test_create_room_method(self):
         """ Test if the room is created when the create room method is called"""
-        Amity.rooms = {"Ken" : [] , "Hogwarts" :[]} #dictionary with the rooms in Amity
-        test_room = Room("Sharon" , "living_space")
-        test_room.create_room()
-        self.assertIn(test_room.room_name , Amity.rooms.keys() , msg="The room has not been added")
-
-    def test_wrong_input(self):
-        """ Test if the data entered is in the correct format"""
-        self.assertEqual(Room(1 , 2) , Room("Sharon" , "Office"),msg= "You have to enter data in the correct form")
+        new_test_room = Room("nandia", "office")
+        new_test_room.create_room()
+        self.assertIn(new_test_room.room_name, self.amity.rooms.keys())
 
     def test_if_room_exists(self):
         """ Test if the room added already exists ,the name of the room is unique"""
-        test_room = Room("Sharon" , "office")
-        Amity.rooms = { "Sharon":[] , "Henry": [] }
-        self.assertNotIn(test_room.room_name , Amity.rooms.keys() , msg = "The room already exists!")
+        self.room.create_room()
+        self.assertNotIn(self.room.room_name, self.amity.rooms.keys(), msg="The room does not exist!")
 
     def test_office_maximum_capacity(self):
         """ Test if an office has more than 6 people"""
-        office1 = Room("Joy" , "office")
-        Amity.rooms ={"Joy": [12 , 132 , 56 , 57 , 12 ,11 ,45]}
-        no_of_people = len(Amity.rooms["Joy"])
-        self.assertEqual(no_of_people , 6 , msg="The maximum number an office can hold is 6")
+        self.room.create_room()
+        no_of_people = len(self.amity.rooms[self.room.room_name.lower()])
+        self.assertNotEqual(no_of_people, 6, msg="The max number of people an office can hold is 6")
 
     def test_living_space_max_capacity(self):
         """ Test if a living_space has more than 4 people """
-        living_space1 = Room("Peace" , "living_space")
-        Amity.rooms = {"Peace":[1 , 2 , 34 ,56 , 78]}
-        no_of_people = len(Amity.rooms["Peace"])
-        self.assertEqual(no_of_people , 4 , msg="The maximum number a living_space can hold is 4")
+        self.room_2.create_room()
+        no_of_people = len(self.amity.rooms[self.room.room_name.lower()])
+        self.assertNotEqual(no_of_people, 4, msg="The max number of people an office can hold is 6")
+
+    def test_create_invalid_room(self):
+        """ Create a room with an invalid room_type"""
+        results = self.invalid_room.create_room()
+        self.assertEqual(results, "The room type is not valid")
+
+    def tearDown(self):
+        del self.amity
+        del self.room
+        del self.room_2
+
 
 class Test_Office(unittest.TestCase):
     """ Tests for the amity_class.Office """
-    def test_if_add_office_works(self):
-        """ Test if the add_office method works"""
-        Amity.offices = ["Hogwarts" , "Snow"] # List of all the offices in Amity
-        test_office = Office("Shire" , "office") #instance of the office class
-        test_office.add_office()
-        self.assertIn( test_office.room_name , Amity.offices , msg = "The office has not been added yet")
+    def setUp(self):
+        self.amity = Amity()
+        self.office = Office("Snow", "office")
+        self.office_2 = Office("Snow", "library")
 
-    def test_if_office_exists(self):
-        """ Tests if the office to be added already exists """
-        test_office = Office("Hogwarts" , "office")
-        Amity.offices = ["Hogwarts" , "Kindaruma"]
-        self.assertNotIn(test_office.room_name , Amity.offices , msg = "The office already exists")
+    def test_if_add_office_method_works(self):
+        """ Test if the add_office method works"""
+        new_test_office=Office("php", "office")
+        new_test_office.add_office()
+        self.assertIn(new_test_office.room_name, self.amity.offices)
+
+    def test_for_invalid_office_type(self):
+        """ Tests if the office to be added has an invalid room_type """
+        results = self.office_2.add_office()
+        self.assertEqual(results, "You cannot enter that room")
+
+    def tearDown(self):
+        del self.amity
+        del self.office
+        del self.office_2
+
 
 class TestLiving_Space(unittest.TestCase):
-    """ Tests for the amity_class.Living_Space"""
+    """ Tests for the amity_class.LivingSpace"""
+    def setUp(self):
+        self.amity = Amity()
+        self.living_s = LivingSpace("Laravel", "living_space")
+        self.invalid_living_space = LivingSpace("Laravely", "hotel")
 
     def test_if_add_living_space_works(self):
         """ Test if the add_living_space method works """
-        Amity.living_spaces = ["Ken" , "Lood"]
-        test_living_space = Living_Space("Oliver" , "living_space")
-        test_living_space.add_living_space()
-        self.assertIn(test_living_space.room_name , Amity.living_spaces , msg ="The living_space has not been added")
+        new_test_living_space = LivingSpace("amber","living_space")
+        new_test_living_space.add_living_space()
+        self.assertIn(new_test_living_space.room_name, self.amity.living_spaces)
 
     def test_if_living_space_exists(self):
         """ Tests if the living_space to be added already exists """
-        Amity.living_spaces = ["Peace" , "Joy"]
-        test_living_space = Living_Space("Peace" , "living_space")
-        test_living_space.add_living_space()
-        self.assertNotIn(test_living_space.room_name , Amity.living_spaces , msg = "The living_space already exists")
+
+        self.living_s.add_living_space()
+        self.assertNotIn(self.living_s.room_name, self.amity.living_spaces, msg="The living space does not exist yet")
+    def test_if_living_space_is_invalid(self):
+        """ Tests if the living_space to be added has invalid room_type """
+        results = self.invalid_living_space.add_living_space()
+        self.assertEqual(results, "You cannot enter that room")
+
+    def tearDown(self):
+        del self.amity
+        del self.living_s
+
 
 class TestPerson(unittest.TestCase):
     """ Tests for the amity_class.Person"""
 
-    def test_wrong_input(self):
-        """ Test if the data entered is in the correct format"""
-
-        self.assertEqual(Person(1 , 2 , 3 ,"Laravel") ,Person("Sharon", "Njihia" ,"fellow" , 98),
-        msg= "You have to enter data in the correct format")
+    def setUp(self):
+        self.test_person = Person()
+        self.amity = Amity()
+        self.new_person = Person("Sharon", "Wanjiku", "staff", 30390)
+        self.new_staff = Staff("Sharon", "Wanjiku", "staff", 30390)
+        self.new_room2 = Room("hogwarts", "office")
+        self.new_room3 = Room("Laravel", "living_space")
+        self.new_test_office = Office("hogwarts", "office")
 
     def test_if_person_exists(self):
         """ Test if the employee to be added already exists ,
         the employee_id of the room is unique"""
-
-        test_person = Person("Sharon", "Njihia" ,"fellow" , 98)
-        Amity.people = { 98:"Fellow"  }
-        self.assertNotIn(test_person.employee_id , Amity.people.keys() , msg = "The person already exists!")
+        self.new_person.add_person()
+        self.assertIn(self.new_person.employee_id, self.amity.people.keys(), msg="The person already exist")
 
     def test_if_add_person_method_works(self):
         """ Test if the add_person method works """
-        Amity.people = {2345 : "fellow" , 456 : "staff"} #dictionary that holds all the employees{emp_id:emp_type}
-        test_person = Person("Sharon" , "Njihia" , "fellow" , 567 ) #instance of the person class
-        test_person.add_person()
-        self.assertNotIn(test_person.employee_id , Amity.people.keys() , msg ="The person was not created!")
+        self.new_room2.create_room()
+        self.new_test_office.add_office()
+        self.new_staff.add_person()
+        self.new_person.add_person()
+        self.assertIn(self.new_person.employee_id, self.amity.people.keys())
+
+    def tearDown(self):
+        del self.test_person
+        del self.amity
+        del self.new_person
+        del self.new_room2
+        del self.new_room3
 
 class TestFellow(unittest.TestCase):
     """ Tests for the amity_class.Fellow class """
+    def setUp(self):
+        self.room = Room("php", "office")
+        self.office = Office('php', 'office')
+        self.new_fellow = Fellow("Kim", "Tim", "fellow", 4509, "n")
+        self.new_fellow_2 = Fellow("Sharon", "Njihia", "fellow", 4509, "n")
 
     def test_if_fellow_exists(self):
         """ Tests if the fellow to be added already exists.
         The employee_id is the unique identifier """
 
-        test_fellow = Fellow("Sharon", "Njihia" ,"fellow" , 98)
-        Amity.fellows =[ 98 , 45]
-        self.assertNotIn(test_fellow.employee_id , Amity.fellows , msg = "The fellow already exists!")
+        self.office.add_office()
+        self.new_fellow.add_person()
+        self.assertNotIn(self.new_fellow.employee_id, Amity.people.keys(), msg="The fellow doesnot exist yet")
+
+    def test_add_person_in_fellow_class(self):
+        """ Tests if the add_person method in the Fellow class works """
+        self.room.create_room()
+        self.office.add_office()
+        results = self.new_fellow.add_person()
+        self.assertEqual(results, "The fellow has been added")
+
+    def tearDown(self):
+        del self.room
+        del self.office
+        del self.new_fellow
 
 class TestStaff(unittest.TestCase):
     """ Tests for amity_class.Staff class """
+    def setUp(self):
+        self.new_office2 = Room("Sharon", "office")  # there must be a room created before adding a person
+        self.amity = Amity()
+        self.new_staff = Staff("Lydia", "Nyawira", "staff", 9001)
 
     def test_if_staff_exists(self):
         """ Test if the staff being added already exists.
         The employee_id is the unique identifier """
+        self.new_office2.create_room()
+        self.new_staff.add_person()
+        self.assertNotIn(self.new_staff.employee_id, self.amity.people.keys(),
+                         msg="The staff member does not already exists")
 
-        test_staff = Staff("Joy" , "Njihia" , "staff" , 198)
-        Amity.staff = [ 65, 45 , 198]
-        self.assertNotIn(test_staff.employee_id , Amity.staff , msg = "The staff member already exists")
+    def tearDown(self):
+        del self.new_office2
+        del self.amity
+        del self.new_staff
