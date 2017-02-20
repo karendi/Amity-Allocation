@@ -1,21 +1,13 @@
-import sqlite3
-import os.path
-
+from termcolor import cprint, colored
 from sqlalchemy import create_engine, update
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.sql import exists
-from sqlalchemy.ext.declarative import declarative_base
-from models import Amity_Allocation, Amity_Population, Amity_Living_space, Amity_Offices, Amity_Fellows, Amity_Staff
+
+from models import AmityAllocation, AmityPopulation,\
+    AmityLivingSpace, AmityOffices, AmityFellows, AmityStaff, AmityUnallocated
 from functions.amity_class import Amity
 
 
-
-# for running native sql statements
-connection = sqlite3.connect("amity_allocation.db")
-cursor = connection.cursor()
-
-
-class Database_sessions(object):
+class DatabaseSessions(object):
 
     def __init__(self, database_name):
             directory = 'databases/'
@@ -33,9 +25,9 @@ class Database_sessions(object):
         for k, v in Amity.people.items():
             # add data to the table
             # first check if the person already exists
-            check_person = self.session.query(Amity_Population).filter_by(Employee_id=k).first()
+            check_person = self.session.query(AmityPopulation).filter_by(Employee_id=k).first()
             if check_person is None:
-                person = Amity_Population(Employee_id=k, Employee_Type=v)
+                person = AmityPopulation(Employee_id=k, Employee_Type=v)
                 self.session.add(person)
                 self.session.commit()
             else:  # edit the already existing person
@@ -49,7 +41,7 @@ class Database_sessions(object):
         """ Edits an already existing column (existing room in the database)"""
         for room_name, people4 in Amity.rooms.items():
             number_of_people = len(people4)
-            returned_data = self.session.query(Amity_Allocation).filter_by(Room_name=room_name).first()
+            returned_data = self.session.query(AmityAllocation).filter_by(Room_name=room_name).first()
             if number_of_people == 0:  # when no-one was allocated to that room again
                 returned_data.Room_name = room_name
                 returned_data.Allocated_People = None
@@ -74,22 +66,22 @@ class Database_sessions(object):
             length_of_list = len(people_in)
 
             # check if the room already exists in the table
-            room_object = self.session.query(Amity_Allocation).filter(Amity_Allocation.Room_name == roomname).first()
+            room_object = self.session.query(AmityAllocation).filter(AmityAllocation.Room_name == roomname).first()
             if room_object is None:
                 if length_of_list == 0:
-                    allocation = Amity_Allocation(Room_name=roomname, Allocated_People=None)
+                    allocation = AmityAllocation(Room_name=roomname, Allocated_People=None)
                     self.session.add(allocation)
                     self.session.commit()
 
                 elif length_of_list == 1:
-                    allocation = Amity_Allocation(Room_name=roomname, Allocated_People=people_in[0])
+                    allocation = AmityAllocation(Room_name=roomname, Allocated_People=people_in[0])
                     self.session.add(allocation)
                     self.session.commit()
 
                 elif length_of_list > 1:
                     # list is v (make the list a string)
                     people = ','.join(map(str, people_in))
-                    allocation = Amity_Allocation(Room_name=roomname, Allocated_People=people)
+                    allocation = AmityAllocation(Room_name=roomname, Allocated_People=people)
                     self.session.add(allocation)
                     self.session.commit()
             else:
@@ -100,9 +92,9 @@ class Database_sessions(object):
         """ Function that takes the Amity.offices list and adds it to the database
         It uses the model Amity_Offices """
         for off in Amity.offices:
-            office_object = self.session.query(Amity_Offices).filter(Amity_Offices.Room_name == off).first()
+            office_object = self.session.query(AmityOffices).filter(AmityOffices.Room_name == off).first()
             if office_object is None:  # check if the office exists
-                new_office = Amity_Offices(Room_name=off)
+                new_office = AmityOffices(Room_name=off)
                 self.session.add(new_office)
                 self.session.commit()
             else:
@@ -114,9 +106,9 @@ class Database_sessions(object):
         """ Function that commits the data from Amity.living_spaces to the database
         It uses the model Amity_Living_space """
         for l_s in Amity.living_spaces:
-            living_space_object = self.session.query(Amity_Living_space).filter(Amity_Living_space.Room_name == l_s).first()
+            living_space_object = self.session.query(AmityLivingSpace).filter(AmityLivingSpace.Room_name == l_s).first()
             if living_space_object is None:  # check if the living_space exists
-                new_living_space = Amity_Living_space(Room_name=l_s)
+                new_living_space = AmityLivingSpace(Room_name=l_s)
                 self.session.add(new_living_space)
                 self.session.commit()
             else:
@@ -128,9 +120,9 @@ class Database_sessions(object):
          uses the model Amity_Fellows"""
         for fellow_id, fellow_name in Amity.fellows.items():
             # check if the fellow exists
-            check_fellow = self.session.query(Amity_Fellows).filter(Amity_Fellows.Employee_id == fellow_id).first()
+            check_fellow = self.session.query(AmityFellows).filter(AmityFellows.Employee_id == fellow_id).first()
             if check_fellow is None:
-                fellow_object = Amity_Fellows(Employee_id=fellow_id, Fellow_name=fellow_name)
+                fellow_object = AmityFellows(Employee_id=fellow_id, Fellow_name=fellow_name)
                 self.session.add(fellow_object)
                 self.session.commit()
             else:
@@ -142,72 +134,94 @@ class Database_sessions(object):
         uses the model Amity_Staff """
         for staff_id, staff_name in Amity.staff.items():
             # check if the staff exists
-            check_staff = self.session.query(Amity_Staff).filter(Amity_Staff.Employee_id == staff_id).first()
+            check_staff = self.session.query(AmityStaff).filter(AmityStaff.Employee_id == staff_id).first()
             if check_staff is None:
-                staff_object = Amity_Staff(Employee_id=staff_id, Staff_name=staff_name)
+                staff_object = AmityStaff(Employee_id=staff_id, Staff_name=staff_name)
                 self.session.add(staff_object)
                 self.session.commit()
             else:
                 self.session.commit()
         return "The staff members were added.."
 
+    def add_unallocated(self):
+        """ Adds the unallocated list of people"""
+        for person,room in Amity.unallocated_people.items():
+            check_person = self.session.query(AmityUnallocated).filter(AmityUnallocated.Employee_id == person).first()
+            if check_person is None:
+                unallocated_object = AmityUnallocated(Employee_id=person, Room=room)
+                self.session.add(unallocated_object)
+                self.session.commit()
+            else:
+                self.session.commit()
+        return "The unallocated people were added"
+
     def return_rooms(self, **data):
         """ Returns the data from the database table Amity_Allocation """
         # returning all the data stored for rooms in the database
-        print("Returning the rooms and the people in them .. \n")
-        results = self.session.query(Amity_Allocation).all()
+        cprint("Returning the rooms and the people in them ..", "cyan")
+        results = self.session.query(AmityAllocation).all()
         new_list = []
-        for i in results:
-            room_name = i.Room_name
-            people_in_room = i.Allocated_People
+        for room in results:
+            room_name = room.Room_name
+            people_in_room = room.Allocated_People
             if people_in_room is None:
                 Amity.rooms[room_name] = new_list
             else:
-                people_in_room = i.Allocated_People.split(',')  # returns a list of all the people in the room
-                people_in_room_int = map(int , people_in_room) # change to integer
-                Amity.rooms[room_name] = people_in_room_int # return the data
-
+                people_in_room = room.Allocated_People.split(',')  # returns a list of all the people in the room
+                Amity.rooms[room_name] = people_in_room  # return the data
         return Amity.rooms
 
     def return_offices(self, *params):
         """ Returns all the offices from the database table Amity_Offices
             appends it to the list Amity.offices """
-        print("Returning the offices...\n")
-        query = self.session.query(Amity_Offices).all()
+        cprint("Returning the offices...", "cyan")
+        query = self.session.query(AmityOffices).all()
         for office in query:
             Amity.offices.append(office.Room_name)
+
         return Amity.offices
 
     def return_living_spaces(self, *params):
-        print("Returning the living spaces")
-        query2 = self.session.query(Amity_Living_space).all()
+        cprint("Returning the living spaces", "cyan")
+        query2 = self.session.query(AmityLivingSpace).all()
         for living_s in query2:
             Amity.living_spaces.append(living_s.Room_name)
         return Amity.living_spaces
 
     def return_fellows(self):
-        print("Returning the fellows..")
-        fellow_query = self.session.query(Amity_Fellows).all()
+        cprint("Returning the fellows..", "cyan")
+        fellow_query = self.session.query(AmityFellows).all()
         for fellow in fellow_query:
-            fellow_id = int(fellow.Employee_id)
+            fellow_id = fellow.Employee_id
             fellow_name = fellow.Fellow_name
             Amity.fellows[fellow_id] = fellow_name  # add data to the Amity.fellows dict
-        print (Amity.fellows)
+        return Amity.fellows
 
     def return_staff(self):
-        print("Returning the staff members..")
-        staff_query = self.session.query(Amity_Staff).all()
+        cprint("Returning the staff members..", "cyan")
+        staff_query = self.session.query(AmityStaff).all()
         for staff in staff_query:
-            staff_id = int(staff.Employee_id)
+            staff_id = staff.Employee_id
             staff_name = staff.Staff_name
             Amity.staff[staff_id] = staff_name  # add data to the Amity.staff dict
-        print (Amity.staff)
+        return Amity.staff
+
 
     def return_population(self):
-        print("Returning the Amity population..")
-        people_query = self.session.query(Amity_Population).all()
+        cprint("Returning the Amity population..", "cyan")
+        people_query = self.session.query(AmityPopulation).all()
         for employee in people_query:
-            employee_id = int(employee.Employee_id)
+            employee_id = employee.Employee_id
             employee_type = employee.Employee_Type
             Amity.people[employee_id] = employee_type
         return Amity.people
+
+    def return_unallocated(self):
+        cprint("Returning unallocated people..", "cyan")
+        unallocated_people =self.session.query(AmityUnallocated).all()
+        for unallocated_person in unallocated_people:
+            employee_id = unallocated_person.Employee_id
+            room = unallocated_person.Room
+            Amity.unallocated_people[employee_id] = room
+        return Amity.unallocated_people
+

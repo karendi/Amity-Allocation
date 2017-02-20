@@ -1,26 +1,23 @@
-import os
-import sys
-from sqlalchemy import Column, ForeignKey, Integer, String, BigInteger, Text
+from sqlalchemy import Column, String, Text
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 
 Base = declarative_base()
 
 
-class Amity_Population(Base):
+class AmityPopulation(Base):
     """ Table with all the people found in Amity """
 
-    __tablename__ = 'Amity_Population'
+    __tablename__ = 'AmityPopulation'
 
-    Employee_id = Column(Integer, primary_key=True)
+    Employee_id = Column(String, primary_key=True)
     Employee_Type = Column(String(25))
 
 
-class Amity_Allocation(Base):
+class AmityAllocation(Base):
     """ Table with the the room name and all the people allocated to the room """
 
-    __tablename__ = 'Amity_Allocation'
+    __tablename__ = 'AmityAllocation'
 
     Room_name = Column(String(25), primary_key=True)
     Allocated_People = Column(Text)
@@ -30,30 +27,36 @@ class Amity_Allocation(Base):
         self.Allocated_People = Allocated_People
 
 
-class Amity_Offices(Base):
-    __tablename__ = 'Amity_Offices'
+class AmityOffices(Base):
+    __tablename__ = 'AmityOffices'
 
     Room_name = Column(String(25), primary_key=True)
 
 
-class Amity_Living_space(Base):
-    __tablename__ = 'Amity_Living_space'
+class AmityLivingSpace(Base):
+    __tablename__ = 'AmityLivingSpace'
 
     Room_name = Column(String(25), primary_key=True)
 
 
-class Amity_Fellows(Base):
-    __tablename__ = 'Amity_Fellows'
+class AmityFellows(Base):
+    __tablename__ = 'AmityFellows'
 
-    Employee_id = Column(Integer, primary_key=True)
+    Employee_id = Column(String, primary_key=True)
     Fellow_name = Column(String(25))
 
 
-class Amity_Staff(Base):
-    __tablename__ = 'Amity_Staff'
+class AmityStaff(Base):
+    __tablename__ = 'AmityStaff'
 
-    Employee_id = Column(Integer, primary_key=True)
+    Employee_id = Column(String, primary_key=True)
     Staff_name = Column(String(25))
+
+class AmityUnallocated(Base):
+    __tablename__ = 'AmityUnallocated'
+
+    Employee_id = Column(String, primary_key=True)
+    Room = Column(String(25))
 
 
 def create_db(database_name):

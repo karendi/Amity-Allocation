@@ -4,7 +4,6 @@ Usage:
     interface.py add_person <First_name> <Last_name> <E_Type> <want_accomodation>
     interface.py save_state [--db=sqlite_database]
     interface.py quit
-    interface.py check_data
     interface.py load_state <database>
     interface.py reallocate_person <employee_id> <room_name>
     interface.py load_from_text_file
@@ -27,10 +26,11 @@ Options:
 
 """
 
-
-from docopt import docopt, DocoptExit
 import cmd
 import os.path
+
+from docopt import docopt, DocoptExit
+from termcolor import cprint, colored
 from functions import amity_class
 from functions import sessions
 from models import create_db
@@ -68,6 +68,8 @@ def docopt_cmd(func):
 
 
 def definition():
+    greetings = os.environ.get('SECRET_KEY')
+    print(greetings)
     print("This program is supposed to help allocate space to Amity's empolyees")
     print("the space can either be an office or Living_Space")
     print("------------------------------------------------------")
@@ -87,18 +89,24 @@ class Amity(cmd.Cmd):
         if room_name[-1].lower() == "office":
             for off in room_name[:-1]:
                 added_office = amity_class.Office(off.lower(), "office")
-                print(added_office.add_office())
+                print("\n")
+                cprint(added_office.add_office(), 'cyan', attrs=['bold'])
                 added_room = amity_class.Room(off.lower(), "office")
-                print(added_room.create_room())
+                cprint(added_room.create_room(), 'magenta', attrs=['bold'])
+                print("\n")
 
         elif room_name[-1].lower() == "living_space":
             for l_space in room_name[:-1]:
-                added_living_space = amity_class.Living_Space(l_space.lower(), "living_space")
-                print(added_living_space.add_living_space())
+                added_living_space = amity_class.LivingSpace(l_space.lower(), "living_space")
+                print("\n")
+                cprint(added_living_space.add_living_space(), 'yellow', attrs=['bold'])
                 added_room = amity_class.Room(l_space.lower(), "living_space")
-                print(added_room.create_room())
+                cprint(added_room.create_room(), 'magenta', attrs=['bold'])
+                print("\n")
         else:
-            print("That room category does not exist!")
+            print("\n")
+            cprint("That room category does not exist!", 'red', attrs=['bold'])
+            print("\n")
 
     @docopt_cmd
     def do_add_person(self, arg):
@@ -106,25 +114,27 @@ class Amity(cmd.Cmd):
         f_name = arg['<First_name>']
         l_name = arg['<Last_name>']
         e_type = arg['<E_Type>']
-        e_id = int(arg['<Employee_No>'])
+        e_id = arg['<Employee_No>']
         a_status = arg['<want_accommodation>']
 
         if len(amity_class.Amity.rooms) != 0:
             if e_type.lower() == "fellow":
                 # append the employee id to a list with fellows
                 added_fellow = amity_class.Fellow(f_name, l_name, e_type, e_id, a_status)
-                print(added_fellow.add_person())
+                print("\n")
+                added_fellow.add_person()
 
             elif e_type.lower() == "staff":
                 # append the employee id to a list with staff members
                 a_status = "n"  # default for a staff member
-
+                print("\n")
                 added_staff = amity_class.Staff(f_name, l_name, e_type, e_id, a_status)
-                print(added_staff.add_person())
+                added_staff.add_person()
 
             # add the person to the amity population dictionary
             new_person = amity_class.Person(f_name, l_name, e_type, e_id)
-            print(new_person.add_person())
+            cprint(new_person.add_person(), "red")
+            print("\n")
         else:
             print(" \n You must create rooms first! \n")
 
@@ -136,25 +146,27 @@ class Amity(cmd.Cmd):
         db_name = arg['--db']
 
         if db_name is None:
-            db_name = "amity_allocation.db"
+            db_name = "amity_default"
             create_db(db_name)
-            database_object = sessions.Database_sessions(db_name)
-            print(database_object.add_person())
-            print(database_object.add_room())
-            print(database_object.add_office())
-            print(database_object.add_living_space())
-            print(database_object.add_fellows())
-            print(database_object.add_staff())
+            database_object = sessions.DatabaseSessions(db_name)
+            cprint(database_object.add_person(), "cyan")
+            cprint(database_object.add_room(), "cyan")
+            cprint(database_object.add_office(), "cyan")
+            cprint(database_object.add_living_space(), "cyan")
+            cprint(database_object.add_fellows(), "cyan")
+            cprint(database_object.add_staff(), "cyan")
+            cprint(database_object.add_unallocated(), "cyan")
 
         else:
             create_db(db_name)
-            database_object = sessions.Database_sessions(db_name)
-            print(database_object.add_person())
-            print(database_object.add_room())
-            print(database_object.add_office())
-            print(database_object.add_living_space())
-            print(database_object.add_fellows())
-            print(database_object.add_staff())
+            database_object = sessions.DatabaseSessions(db_name)
+            cprint(database_object.add_person(), "cyan")
+            cprint(database_object.add_room(), "cyan")
+            cprint(database_object.add_office(), "cyan")
+            cprint(database_object.add_living_space(), "cyan")
+            cprint(database_object.add_fellows(), "cyan")
+            cprint(database_object.add_staff(), "cyan")
+            cprint(database_object.add_unallocated(), "cyan")
 
     @docopt_cmd
     def do_load_state(self, arg):
@@ -162,48 +174,54 @@ class Amity(cmd.Cmd):
         database_name = arg['<database>']
         # check if the database exists
         if os.path.exists("./databases/" + database_name + ".db"):
-            database_object2 = sessions.Database_sessions(database_name)
+            print("\n")
+            database_object2 = sessions.DatabaseSessions(database_name)
             database_object2.return_rooms()
             database_object2.return_offices()
             database_object2.return_living_spaces()
             database_object2.return_fellows()
             database_object2.return_staff()
             database_object2.return_population()
+            database_object2.return_unallocated()
+            print("\n")
         else:
-            print("The database doesn't exist!")
-
-
-    @docopt_cmd
-    def do_check_data(self, arg):
-        """Usage: check_data"""
-        print(sessions.check_data())
+            print("\n")
+            cprint("The database doesn't exist!", "red", attrs=['bold'])
+            print("\n")
 
     @docopt_cmd
     def do_reallocate_person(self, arg):
         """Usage: reallocate_person <employee_id> <room_name>"""
-        person_identifier = int(arg['<employee_id>'])
+        person_identifier = arg['<employee_id>']
         room_name = arg['<room_name>']
         # test the employee type of the person
-        if person_identifier in map(int,amity_class.Amity.staff.keys()):
+        if person_identifier in amity_class.Amity.staff.keys():
             to_be_reallocated = amity_class.Staff()
-            print(to_be_reallocated.reallocate_staff(person_identifier, room_name))
+            print("\n")
+            cprint(to_be_reallocated.reallocate_staff(person_identifier, room_name), "cyan", attrs=['bold'])
+            print("\n")
 
-        elif person_identifier in map(int,amity_class.Amity.fellows.keys()):
+        elif person_identifier in amity_class.Amity.fellows.keys():
             fellow_to_be_allocated=amity_class.Fellow()
-            print(fellow_to_be_allocated.reallocate_fellow(person_identifier, room_name))
+            print("\n")
+            cprint(fellow_to_be_allocated.reallocate_fellow(person_identifier, room_name), "cyan", attrs=['bold'])
+            print("\n")
 
-        elif person_identifier not in map(int,amity_class.Amity.people.keys()):
+        elif person_identifier not in amity_class.Amity.people.keys():
             print("\n Sorry you cannot reallocate an employee who has not been saved \n")
-
 
     @docopt_cmd
     def do_load_from_text_file(self, arg):
         """ Usage: load_from_text_file """
         if len(amity_class.Amity.rooms) != 0:
             person_from_text_file = amity_class.Person()
-            print(person_from_text_file.load_from_text_file())
+            print("\n")
+            person_from_text_file.load_from_text_file()
+            print("\n")
         else:
-            print("\n You have to have/create rooms first! \n")
+            print("\n")
+            cprint("\n You have to have/create rooms first! \n", 'red', attrs=['bold'])
+            print("\n")
 
     @docopt_cmd
     def do_print_allocations(self, arg):
@@ -223,7 +241,12 @@ class Amity(cmd.Cmd):
     @docopt_cmd
     def do_print_unallocated(self, arg):
         """ Usage: print_unallocated"""
+        if len(amity_class.Amity.unallocated_people) == 0:
+            print("\n")
+            cprint("There are no people in the unallocated list", "red", attrs=['bold'])
+            print("\n")
         amity_class.Amity.print_unallocated_people()
+
 
     @docopt_cmd
     def do_quit(self, arg):

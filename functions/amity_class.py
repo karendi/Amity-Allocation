@@ -1,6 +1,8 @@
 import random
 import os
 
+from termcolor import cprint, colored
+
 
 class Amity(object):
     """ Contains dictionaries or lists as class variable
@@ -33,34 +35,58 @@ class Amity(object):
         """ Method that prints the rooms and people allocated to them """
         if len(Amity.rooms) != 0:
             for key, value in Amity.rooms.items():
-                print ("Room Name: " + key)
-                print("---------------------------------------------")
-                for person in value:
-                    if person in Amity.fellows.keys():
-                        print (Amity.fellows[person] + " " +str(person))
-                    elif person in Amity.staff.keys():
-                        print (Amity.staff[person] + " " + str(person))
-                print("---------------------------------------------")
-                print("\n")
+                if key in Amity.offices:
+                    print("\n")
+                    print("---------------------------------------------")
+                    cprint("AMITY OFFICES", 'red', attrs=['bold'])
+                    print("---------------------------------------------")
+                    cprint("Room Name: " + key, 'red', attrs=['bold'])
+                    print("---------------------------------------------")
+                    for person in value:
+                        if person in Amity.fellows.keys():
+                            print (Amity.fellows[person] + " " + str(person))
+                        elif person in Amity.staff.keys():
+                            print (Amity.staff[person] + " " + str(person))
+                    print("---------------------------------------------")
+                    print("\n")
+                elif key in Amity.living_spaces:
+                    print("\n")
+                    print("---------------------------------------------")
+                    cprint("AMITY LIVING SPACE", 'red', attrs=['bold'])
+                    print("---------------------------------------------")
+                    cprint("Room Name: " + key, 'red', attrs=['bold'])
+                    print("---------------------------------------------")
+                    for person in value:
+                        if person in Amity.fellows.keys():
+                            print (Amity.fellows[person] + " " + str(person))
+                    print("---------------------------------------------")
+                    print("\n")
         else:
-            print("There are no allocations yet to be printed")
+            return "There are no allocations yet to be printed"
 
     @staticmethod
     def print_unallocated_people():
         """ Method that prints the people who have not been allocated to any room(living_space / office) """
-        if len(Amity.unallocated_people) == 0: # check if there are any people in the unallocated_people dict
-            print("There are currently no unallocated people..")
+        if len(Amity.unallocated_people) == 0:  # check if there are any people in the unallocated_people dict
+            return "There are currently no unallocated people.."
         else:
             for key, value in Amity.unallocated_people.items():
-                print("Unallocated List of people")
-                print("-----------------------------------------------")
-                print(str(key) + ":" + " " + value)
+                print("\n")
+                cprint("Unallocated List of people", "red", attrs=['bold'])
+                cprint("-----------------------------------------------", "white")
+                if key in Amity.fellows.keys():
+                    cprint(str(key) + ":" + Amity.fellows[key] + " " + "-" + value, "cyan")
+                    print("\n")
+                elif key in Amity.staff.keys():
+                    cprint(str(key) + ":" + Amity.staff[key] + " " + "-" + value, "cyan")
+                    print("\n")
+            return Amity.unallocated_people
 
     @staticmethod
     def print_room(room_name):
         """ Method that prints the people in the room uses the Amity.rooms dict """
         if room_name in Amity.rooms:  # check if the room exists
-            print("Room Name:" + room_name)
+            cprint("Room Name:" + room_name, "yellow", attrs=['bold'])
             print("-------------------------------------")
 
             for person in Amity.rooms[room_name]:
@@ -68,8 +94,9 @@ class Amity(object):
                     print(Amity.fellows[person])
                 elif person in Amity.staff.keys():
                     print(Amity.staff[person])
+            return Amity.rooms
         else:
-            print("The room does not exist")
+            cprint("The room does not exist" , "red")
 
     def __init__(self):
         pass
@@ -116,10 +143,10 @@ class Office(Room):
                 Amity.offices.append(self.room_name.lower())
             return "The office " + self.room_name + " has been added"
         else:
-            return "You cannot enter that room "
+            return "You cannot enter that room"
 
 
-class Living_Space(Room):
+class LivingSpace(Room):
     """ Subclass of the Room class for rooms with room_type == living_space.
     It uses the Amity.living_spaces list """
 
@@ -143,10 +170,10 @@ class Person(Amity):
     """ Class that inherits from Amity class uses the Amity.people dict.
     Contain a dict with all the people found in Amity facility"""
 
-    def __init__(self, First_name="none", Last_name="none",
+    def __init__(self, first_name="none", last_name="none",
                  employee_type="none", employee_id="none", want_accomodation="n"):
-        self.First_name = First_name
-        self.Last_name = Last_name
+        self.first_name = first_name
+        self.last_name = last_name
         self.employee_type = employee_type
         self.employee_id = employee_id  # unique identifier for a person
         self.want_accomodation = want_accomodation
@@ -155,10 +182,10 @@ class Person(Amity):
         """ Adds data to the Amity.people dict """
         if self.employee_id in Amity.people.keys():
             return "Sorry an employee with the same ID already exists"
-        elif self.employee_type in ["staff" , "fellow"]:
+        elif self.employee_type in ["staff", "fellow"]:
             e_type = self.employee_type.lower()
             Amity.people[self.employee_id] = e_type
-            return(" \n The employee with the id '{0}' has been added ".format(self.employee_id))
+            return " The employee with the id '{0}' has been added ".format(self.employee_id)
 
         else:
             return "Invalid employee type"
@@ -172,30 +199,30 @@ class Person(Amity):
         for add_person in new_file.readlines():
             new_person = add_person.split(' ')
             if new_person[2].lower() == 'staff':
-                Person.First_name = new_person[0]
-                Person.Last_name = new_person[1]
+                Person.first_name = new_person[0]
+                Person.last_name = new_person[1]
                 Person.employee_type = new_person[2].lower()
                 Person.employee_id = new_person[3].strip('\n')
-                new_staff2 = Staff(Person.First_name, Person.Last_name, Person.employee_type, Person.employee_id)
-                print (new_staff2.add_person())
+                new_staff2 = Staff(Person.first_name, Person.last_name, Person.employee_type, Person.employee_id)
+                cprint(new_staff2.add_person(), "cyan", attrs=['bold'])
                 # add the person to the people list
                 Amity.people[Person.employee_id] = Person.employee_type
 
             elif new_person[2].lower() == 'fellow':
 
-                Person.First_name = new_person[0]
-                Person.Last_name = new_person[1]
+                Person.first_name = new_person[0]
+                Person.last_name = new_person[1]
                 Person.employee_type = new_person[2].lower()
                 Person.employee_id = new_person[3]
                 Person.want_accomodation = new_person[4].strip('\n')
-                new_fellow2 = Fellow(Person.First_name,Person.Last_name, Person.employee_type, Person.employee_id,
+                new_fellow2 = Fellow(Person.first_name,Person.last_name, Person.employee_type, Person.employee_id,
                                      Person.want_accomodation)
-                print(new_fellow2.add_person())
+                new_fellow2.add_person()
                 # add the person to the people list
                 Amity.people[Person.employee_id] = Person.employee_type
 
             else:
-                return "The person you are trying to add is not categorized correctly"
+                cprint("The person you are trying to add is not categorized correctly", "red", attrs=['bold'])
         return Amity.people  # return the dict with all the people
 
 
@@ -203,20 +230,22 @@ class Fellow(Person):
     """ Subclass of Person , contain all the employees with employee_type == fellow.
     Uses Amity.fellows list"""
 
-    def __init__(self, First_name=None, Last_name=None, employee_type=None,
+    def __init__(self, first_name=None, last_name=None, employee_type=None,
                  employee_id=None, want_accomodation="n", office="None",
                  living_space="None"):
-        Person.__init__(self, First_name, Last_name, employee_type, employee_id, want_accomodation)
+        Person.__init__(self, first_name, last_name, employee_type, employee_id, want_accomodation)
         self.office = office
         self.living_space = living_space
 
     def add_person(self):
-        fellow_name = self.First_name + " " + self.Last_name
+        fellow_name = self.first_name + " " + self.last_name
         """ appends to the Amity.fellows list"""
         if self.employee_id in Amity.people.keys():
-            print("Sorry a fellow with the same ID already exists!")
+            cprint("Sorry a fellow with the same ID already exists!", "red")
 
         else:
+            # adds the fellow to the fellow dict
+            Amity.fellows[self.employee_id] = fellow_name
             if self.want_accomodation.lower() == "y":
                 print('Adding fellow to office and living space ...')
                 if len(Amity.offices) == 0:
@@ -228,13 +257,14 @@ class Fellow(Person):
                     if len(Amity.rooms[r_name.lower()]) < 6:
                         # assign a fellow to an office
                         Amity.rooms[r_name.lower()].append(self.employee_id)
+                        cprint("The fellow has been added to {0}".format(r_name), "cyan")
 
                     elif len(Amity.rooms[r_name.lower()]) == 6:
                         # when the room is full , allocated the extra people to Amity.unallocated_people dict
-                        print("the office is full..")
-                        unallocated_list2 = [self.employee_id]
-                        for x in unallocated_list2:
-                            Amity.unallocated_people[x] = "office"  # append to the Amity.unallocated_people dict
+                        cprint("the office is full placing the fellow in unallocated list..", "red", attrs=['bold'])
+                        unallocated_fellows_offices = [self.employee_id]
+                        for fellow in unallocated_fellows_offices:
+                            Amity.unallocated_people[fellow] = "office"  # append to the Amity.unallocated_people dict
 
                 if len(Amity.living_spaces) == 0:
                     return "There are no living spaces yet, try and load state.."
@@ -246,19 +276,17 @@ class Fellow(Person):
                     if len(Amity.rooms[l_name.lower()]) < 4:
                         # assign a fellow to a living space randomly
                         Amity.rooms[l_name.lower()].append(self.employee_id)
+                        cprint("The fellow has been added to {0}".format(l_name), "cyan")
 
                     elif len(Amity.rooms[l_name.lower()]) == 4:
                         # when the room is full , allocate the extra people to Amity.unallocated_people dict
-                        print("the living space is full...")
-                        unallocated_list1 = [self.employee_id]
-                        for y in unallocated_list1:
-                            Amity.unallocated_people[y] = "living_space"  # append to the Amity.unallocated_people dict
-                            return "the fellow has been added to the unallocated people list.."
-
-                # adds the fellow to the fellow dict
-                Amity.fellows[self.employee_id] = fellow_name
-
-                return "The fellow has been added to the office: " + r_name + "the living_space: " + l_name
+                        cprint("the living space is full adding the fellow to the unallocated list...", 'red', attrs=['bold'])
+                        unallocated_fellows_l_space = [self.employee_id]
+                        for fellow in unallocated_fellows_l_space:
+                            if fellow in Amity.unallocated_people.keys():
+                                Amity.unallocated_people[fellow] = "office living_space"
+                            else:
+                                Amity.unallocated_people[fellow] = "living_space"  # append to the Amity.unallocated_people dict
 
             elif self.want_accomodation.lower() == "n":
                 print("Adding the fellow to an office...")
@@ -271,54 +299,58 @@ class Fellow(Person):
                     if len(Amity.rooms[r_name.lower()]) < 6:
                         # assign a fellow to an office
                         Amity.rooms[r_name.lower()].append(self.employee_id)
+                        return "The fellow has been added"
 
                     elif len(Amity.rooms[r_name.lower()]) == 6:
                         # when the room is full , allocated the extra people to Amity.unallocated_people dict
-                        unallocated_list3 = [self.employee_id]
-                        for x in unallocated_list3:
+                        unallocated_fellows_offices_2 = [self.employee_id]
+                        for x in unallocated_fellows_offices_2:
                             Amity.unallocated_people[x] = "office"  # append to the Amity.unallocated_people dict
+                        return "The fellow has been added to the unallocated_people list"
 
                 # add the fellow to the fellows dict
                 Amity.fellows[self.employee_id] = fellow_name
 
-                return Amity.rooms, Amity.unallocated_people , Amity.fellows
+                return Amity.rooms, Amity.unallocated_people, Amity.fellows
 
-    def reallocate_fellow(self, p_identifier, r_name):
+    def reallocate_fellow(self, p_identifier, new_room):
         """ Reallocate the fellow to an Office or to a Living_Space"""
 
         # check if the fellow to be reallocated is from the unallocated dict(is not placed in any room)
         Amity.check_available_rooms()
         if p_identifier in Amity.unallocated_people.keys():
-            if Amity.unallocated_people[p_identifier] == "office" and r_name in Amity.available_offices:
-                Amity.rooms[r_name].append(p_identifier)  # allocate the fellow to an available office
-                return Amity.rooms
+            if Amity.unallocated_people[p_identifier] == "office" and new_room in Amity.available_offices:
+                Amity.rooms[new_room].append(p_identifier)  # allocate the fellow to an available office
+                del Amity.unallocated_people[p_identifier]
+                return "'{0}' has been reallocated to '{1}'".format(p_identifier, new_room)
 
-            elif Amity.unallocated_people[p_identifier] == "living_space" and r_name in Amity.available_living_spaces:
-                Amity.rooms[r_name].append(p_identifier)  # allocate the fellow to an available living space
-                return Amity.rooms
-            elif p_identifier in Amity.fellows.keys() and r_name in Amity.available_offices and Amity.available_living_spaces:
-                Amity.rooms[r_name].append(p_identifier)  # allocate the fellow to an available living space
-                return Amity.rooms
+            elif Amity.unallocated_people[p_identifier] == "living_space" and new_room in Amity.available_living_spaces:
+                Amity.rooms[new_room].append(p_identifier)  # allocate the fellow to an available living space
+                del Amity.unallocated_people[p_identifier]
+                return "'{0}' has been reallocated to '{1}'".format(p_identifier, new_room)
+            elif Amity.unallocated_people[p_identifier] == "office" and new_room not in Amity.available_offices:
+                return "The fellow needs an office and you are reallocating to a living space"
+            elif Amity.unallocated_people[p_identifier] == "living_space" and new_room not in Amity.available_living_spaces:
+                return "The fellow needs a living space and you are reallocating them to an office"
             else:
                 return "Sorry the fellow could not be reallocated"
 
         else:  # when the fellow already has already been allocated a room
 
             # check if the fellow is to be reallocated to an office
-            if r_name in Amity.offices:
-                print("reallocating fellow to another office...")
+            if new_room in Amity.offices:
+                cprint("reallocating fellow to another office...", "yellow", attrs=['bold'])
                 # return a new dict with just the offices
                 new_dict = {key: value for key, value in Amity.rooms.items() if key in Amity.offices}
                 # Look for the person in the offices
                 for room, list_of_people in new_dict.items():
                     if p_identifier in list_of_people:  # find the person in the office
                         Amity.rooms[room].remove(p_identifier)  # remove the person from the room
-                        Amity.rooms[r_name].append(p_identifier)  # add them to the new room given
-                        return Amity.rooms
-
+                        Amity.rooms[new_room].append(p_identifier)  # add them to the new room given
+                        return "'{0}' has been reallocated to '{1}'".format(p_identifier, new_room)
 
             # check if the fellow is to be reallocated to a living_space
-            elif r_name in Amity.living_spaces:
+            elif new_room in Amity.living_spaces:
                 print("reallocating fellow to a new living space...")
                 # return a new dict with just the living_spaces
                 new_dict2 = {key: value for key, value in Amity.rooms.items() if key in Amity.living_spaces}
@@ -326,20 +358,21 @@ class Fellow(Person):
                 for room2, list_of_people2 in new_dict2.items():
                     if p_identifier in list_of_people2:  # find the person in the living_spaces
                         Amity.rooms[room2].remove(p_identifier)  # remove the person from the living_space
-                        Amity.rooms[r_name].append(p_identifier)  # add them to the new living_space
-                return Amity.rooms
+                        Amity.rooms[new_room].append(p_identifier)  # add them to the new living_space
+                        return "'{0}' has been reallocated to '{1}'".format(p_identifier,new_room)
+
             else:
                 return "The room does not exist"
 
 
 class Staff(Person):
-    def __init__(self, First_name=None, Last_name=None, employee_type=None,
+    def __init__(self, first_name=None, last_name=None, employee_type=None,
                  employee_id=None, want_accomodation="n", office="None"):
-        Person.__init__(self, First_name, Last_name, employee_type, employee_id, want_accomodation)
+        Person.__init__(self, first_name, last_name, employee_type, employee_id, want_accomodation)
         self.office = office
 
     def add_person(self):
-        staff_name = self.First_name + " " + self.Last_name
+        staff_name = self.first_name + " " + self.last_name
         if self.employee_id in Amity.people.keys():
             return "Sorry a staff member with the same ID already exists"
         else:
@@ -348,51 +381,61 @@ class Staff(Person):
             else:
                 print("adding the staff to a new office...")
                 # choose a random office name from the list
-                r_name = random.choice(Amity.offices)
+                office_name = random.choice(Amity.offices)
 
                 # max_capacity of an office is 6
-                if len(Amity.rooms[r_name.lower()]) < 6:
+                if len(Amity.rooms[office_name.lower()]) < 6:
                     # assign the staff to an office
-                    Amity.rooms[r_name.lower()].append(self.employee_id)
+                    Amity.rooms[office_name.lower()].append(self.employee_id)
+                    # append the staff to the staff dict
+                    Amity.staff[self.employee_id] = staff_name
 
-                elif len(Amity.rooms[r_name.lower()]) == 6:
+                elif len(Amity.rooms[office_name.lower()]) == 6:
                     #  when the room is full , allocated the extra people to Amity.unallocated_people dict
-                    unallocated_list4 = [self.employee_id]
-                    for x in unallocated_list4:
+                    unallocated_staff = [self.employee_id]
+                    for x in unallocated_staff:
                         Amity.unallocated_people[x] = "office"  # append to the Amity.unallocated_people dict
-                    return("The office is full, placing the staff member in the unallocated list...")
+                        # append the staff to the staff dict
+                    Amity.staff[self.employee_id] = staff_name
 
-                # append the staff to the staff dict
-                Amity.staff[self.employee_id] = staff_name
+                    return "The office is full, placing the staff member in the unallocated list..."
 
-                return("\nThe staff member '{0}' was added to the office '{1}'".format(staff_name ,r_name))
+                return"\nThe staff member '{0}' was added to the office '{1}'".format(staff_name, office_name)
 
-    def reallocate_staff(self, p_identifier, r_name):
+    def reallocate_staff(self, p_identifier, new_office):
         Amity.check_available_rooms()
         # check if the staff to be reallocated is in the unallocated people dict
         if p_identifier in Amity.unallocated_people.keys():
-            if r_name.lower() in Amity.living_spaces:
+            if new_office.lower() in Amity.living_spaces:
                 return "A staff member can not be assigned a Living Space"
-            elif r_name in Amity.available_offices:
+            elif new_office in Amity.available_offices:
                 # check if the office is available
-                Amity.rooms[r_name].append(p_identifier)
+                Amity.rooms[new_office].append(p_identifier)
+                del Amity.unallocated_people[p_identifier]
                 return "The staff member with the id " + str(p_identifier) + " has been reallocated "
             else:
                 return "The staff could not be reallocated check that the room is available"
 
         else:
             # if the staff member already has been allocated a room
-            if r_name.lower() in Amity.living_spaces:
+            if new_office not in Amity.offices:
+                return "The room does not exist!"
+
+            elif new_office.lower() in Amity.living_spaces:
                 return "A staff member can not be assigned a living space"
 
-            elif r_name in Amity.offices:
+            elif new_office in Amity.available_offices:
                 print("reallocating the staff to a new office...")
                 # Look for the person in the offices
                 for room, list_of_people in Amity.rooms.items():
                     if p_identifier in list_of_people:  # find the person in the rooms
                         list_of_people.remove(p_identifier)  # remove the person from the room
-                        Amity.rooms[r_name].append(p_identifier)  # add them to a new room
-                return Amity.rooms
+                        Amity.rooms[new_office].append(p_identifier)  # add them to a new room
+                return "'{0}' has been reallocated to '{1}'".format(p_identifier, new_office)
 
-            else:
-                return "That room does not exist"
+            elif new_office not in Amity.available_offices:
+                return "Sorry the room is full"
+
+
+
+        return Amity.rooms
